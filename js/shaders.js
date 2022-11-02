@@ -1,15 +1,27 @@
-const vertex = `#version 300 es //vedno na začetku
-    //uniform vec2 uOffset;
+const vertex = `#version 300 es
+    uniform mat4 uModelMatrix;
+    uniform mat4 uCameraMatrix;
+    uniform mat4 uProjectionMatrix;
+
+    in vec4 aPosition;
+    in vec4 aColor;
+
+    out vec4 vColor;
+    
     void main(){
-        gl_Position = vec4(0.0, 0.0, 0.0, 1.0); //točka naj bo na sredini
-        gl_PointSize = 150.0; //povečamo točko, zdaj je kvadrat velikosti 150px
+        vColor = aColor;
+        gl_Position = uProjectionMatrix*uCameraMatrix*uModelMatrix*aPosition;
     }
 `;
 const fragment = `#version 300 es
-    precision mediump float; //vedno po verziji (samo fragment shader)
-    out vec4 fragColor;
+    precision mediump float;
+    in vec4 vColor;
+
+    out vec4 oColor;
+
     void main(){
-        fragColor = vec4(0.0, 1.0, 0.0, 1.0); //točka naj bo zelena
+        //oColor = vec4(0,1,0,1);
+        oColor = vColor;
     }
 `;
 export const shaders = {

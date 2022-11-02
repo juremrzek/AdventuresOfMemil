@@ -15,7 +15,8 @@ export class Application{
         requestAnimationFrame(this.callUpdate);
     }
     start(){
-        
+        this.gl.clearColor(0, 0, 0, 1);
+        this.gl.clear(gl.COLOR_BUFFER_BIT);    
     }
     update(){
         
@@ -23,9 +24,16 @@ export class Application{
     render(){
         
     }
+    resize(){
+
+    }
     callUpdate(){
+        this.callResize();
         this.update();
         this.render();
         requestAnimationFrame(this.callUpdate);
+    }
+    callResize() {
+        //this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);
     }
 }
