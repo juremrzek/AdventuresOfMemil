@@ -5,10 +5,12 @@ const mat4 = glMatrix.mat4;
 class Game extends Application {
     start(){
         //Create any variables
-        this.player = new Player();
-        this.cameraEye = [1,1,1]
-        const player = this.player; //so we don't have to call this every time
         const gl = this.gl;
+        this.player = new Player();
+        const player = this.player; //so we don't have to call this every time
+        this.cameraEye = [1,1,1]
+        this.time = performance.now();
+        this.startTime = this.time;
         
         //Create vertex shader
         const vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -142,31 +144,32 @@ class Game extends Application {
         gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
     }
     update(){
+        //get dt so that the game is equally fast regardless of device performance
+        const t = this.time = performance.now();
+        const dt = (this.time - this.startTime) * 0.001;
+        this.startTime = this.time;
+
         const gl = this.gl;
         const player = this.player;
         player.direction = [0,0,0];
         //PLAYER MOVEMENT
         if(this.player.forward){
-            player.direction[0] += Math.cos(toRadians(player.angle))*player.speed;
-            player.direction[2] += -Math.sin(toRadians(player.angle))*player.speed;
+            player.direction[0] += player.speed*dt;
         }
         if(this.player.backwards){
-            player.direction[0] += -Math.cos(toRadians(player.angle))*player.speed;
-            player.direction[2] += Math.sin(toRadians(player.angle))*player.speed;
+            player.direction[0] -= player.speed*dt;
         }
         if(this.player.left){
-            player.direction[0] += Math.cos(toRadians(player.angle+90))*player.speed;
-            player.direction[2] += -Math.sin(toRadians(player.angle+90))*player.speed;
+            player.direction[2] -= player.speed*dt;
         }
         if(this.player.right){
-            player.direction[0] += -Math.cos(toRadians(player.angle+90))*player.speed;
-            player.direction[2] += Math.sin(toRadians(player.angle+90))*player.speed;
+            player.direction[2] += player.speed*dt;
         }
         if(this.player.rotateLeft){
-            mat4.rotateY(this.modelMatrix, this.modelMatrix, player.rotateSpeed);
+            mat4.rotateY(this.modelMatrix, this.modelMatrix, player.rotateSpeed*dt);
         }
         if(this.player.rotateRight){
-            mat4.rotateY(this.modelMatrix, this.modelMatrix, -player.rotateSpeed);
+            mat4.rotateY(this.modelMatrix, this.modelMatrix, -player.rotateSpeed*dt);
         }
         mat4.translate(this.modelMatrix, this.modelMatrix, player.direction);
 

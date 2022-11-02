@@ -9,7 +9,7 @@ class Player{
         this.backwards = false;
         this.rotateLeft = false;
         this.rotateRight = false;
-        this.speed = 0.8;
-        this.rotateSpeed = 0.1;
+        this.speed = 30;
+        this.rotateSpeed = 8;
     }
 }
