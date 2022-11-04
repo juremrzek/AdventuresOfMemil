@@ -2,9 +2,6 @@ const vertex = `#version 300 es
     uniform mat4 uMvpMatrix;
 
     in vec4 aPosition;
-    //in vec4 aColor;
-
-    //out vec4 vColor;
     
     void main(){
         gl_Position = uMvpMatrix*aPosition;
@@ -12,7 +9,6 @@ const vertex = `#version 300 es
 `;
 const fragment = `#version 300 es
     precision mediump float;
-    //in vec4 vColor;
 
     out vec4 oColor;
 

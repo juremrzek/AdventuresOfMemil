@@ -50,12 +50,13 @@ class Game extends Application {
         //-------------------------------------------------------------------------------------------------------------------------------------
         
         //Load json file
-        const response = await fetch('./cow.json');
-        const h = await response.json();
-        const json = [JSON.stringify(h)]
+        const response = await fetch('./Test.json');
+        const temp = await response.json();
+        const json = [JSON.stringify(temp)]
         const pyramidObject = JSON.parse(json);
+        const mesh = pyramidObject.meshes[1];
 
-        const vertices = new Float32Array(pyramidObject.meshes[0].vertices);
+        const vertices = new Float32Array(mesh.vertices);
 
         const verticesBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, verticesBuffer);
@@ -72,25 +73,22 @@ class Game extends Application {
             0,            //offset - odmik v bloku. Na prvem atributu je 0, potem pa treba incrementat, drugače bi overwritali data.
         );
 
-        //const aColorLoc = gl.getAttribLocation(program, 'aColor');
-        //gl.enableVertexAttribArray(aColorLoc);
         //gl.vertexAttribPointer(aColorLoc, 3, gl.FLOAT, false, 6*4, 3*4);
-        const indices = new Uint16Array(pyramidObject.meshes[0].faces.flat(1));
+        const indices = new Uint16Array(mesh.faces.flat(1));
         this.elementCount = indices.length;
         this.indicesBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-        //CAMERA-----------------------------------------------------------------------------------------------------------------------------
+        //Kreiranje MVP matrik
         this.modelMatrix = mat4.create();
         this.viewMatrix = mat4.create();
         this.projectionMatrix = mat4.create();
         mat4.scale(this.modelMatrix, this.modelMatrix, [.5, .5, .5]);
-        //Matri, [x, y, z] lokacija kamere, [x, y, z] kam gleda kamera, up <- vse absolutne koordinate!
         mat4.lookAt(
-            this.viewMatrix, //Matrika kamera
-            [-1, 1, 0],        //Lokacija kamere
-            player.pos,   //V katero točko naj gleda kamera
+            this.viewMatrix,   //Matrika kamera
+            [0, 1, -1],        //Lokacija kamere
+            player.pos,        //V katero točko naj gleda kamera
             [0, 1, 0]          //Katera smer je gor
         );
         mat4.perspective(this.projectionMatrix, Math.PI/1.5, gl.canvas.width/gl.canvas.height, 0.0001, 20);
@@ -142,18 +140,19 @@ class Game extends Application {
         const gl = this.gl;
         const player = this.player;
         player.direction = [0,0,0];
+
         //PLAYER MOVEMENT
         if(player.forward){
-            player.direction[0] += player.speed*dt;
+            player.direction[2] += player.speed*dt;
         }
         if(player.backwards){
-            player.direction[0] -= player.speed*dt;
-        }
-        if(player.left){
             player.direction[2] -= player.speed*dt;
         }
+        if(player.left){
+            player.direction[0] -= player.speed*dt;
+        }
         if(player.right){
-            player.direction[2] += player.speed*dt;
+            player.direction[0] += player.speed*dt;
         }
         if(player.rotateLeft){
             mat4.rotateY(this.modelMatrix, this.modelMatrix, player.rotateSpeed*dt);
@@ -162,42 +161,26 @@ class Game extends Application {
             mat4.rotateY(this.modelMatrix, this.modelMatrix, -player.rotateSpeed*dt);
         }
         mat4.translate(this.modelMatrix, this.modelMatrix, player.direction);
+        //Update player.pos so we know where to look with the camera.
         mat4.getTranslation(player.pos, this.modelMatrix);
 
         //send mvp matrix to vertex shader
         this.mvpMatrix = getMvpMatrix(this.modelMatrix, this.viewMatrix, this.projectionMatrix);
         gl.uniformMatrix4fv(this.uMvpMatrixLoc, false, this.mvpMatrix);
-
-        //mat4.lookAt(this.viewMatrix, this.cameraEye, player.pos, [0, 1, 0]);
-        //gl.uniformMatrix4fv(this.uviewMatrixLoc, false, this.viewMatrix);
     }
     render(){
         const gl = this.gl;
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.elementCount, gl.UNSIGNED_SHORT, 0);
     }
 }
-  
-// resize the canvas to fill browser window dynamically
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas, false);
-
+//Začetek programa
 const canvas = document.getElementById("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-//canvas.width = 400;
-//canvas.height = 400;
 const game = new Game(canvas);
 await game.init();
 
-function toRadians(degrees){
-    return degrees * (Math.PI/180);
-}
-function toDegrees(radians){
-    return radians * (180/Math.PI);
-}
 function getMvpMatrix(modelMatrix, viewMatrix, projectionMatrix){
     let mvpMatrix = mat4.create();
     mat4.multiply(mvpMatrix, projectionMatrix, viewMatrix);
