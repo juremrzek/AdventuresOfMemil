@@ -1,6 +1,7 @@
 import {Application} from './Application.js'
 import {shaders} from './shaders.js'
 const mat4 = glMatrix.mat4;
+const vec3 = glMatrix.vec3;
 
 class Game extends Application {
     async start(){
@@ -87,7 +88,7 @@ class Game extends Application {
         mat4.scale(this.modelMatrix, this.modelMatrix, [.5, .5, .5]);
         mat4.lookAt(
             this.viewMatrix,   //Matrika kamera
-            [0, 1, -1],        //Lokacija kamere
+            [0, 0, -1],        //Lokacija kamere
             player.pos,        //V katero točko naj gleda kamera
             [0, 1, 0]          //Katera smer je gor
         );
@@ -128,6 +129,20 @@ class Game extends Application {
         this.mvpMatrix = getMvpMatrix(this.modelMatrix, this.viewMatrix, this.projectionMatrix);
         gl.uniformMatrix4fv(this.uMvpMatrixLoc, false, this.mvpMatrix);
 
+        //Shading
+        this.uLightDirectionLoc = gl.getUniformLocation(program, 'uLightDirection');
+        this.lightDirection = [1, 1, 1];
+        gl.uniform3fv(this.uLightDirectionLoc, this.lightDirection);
+
+        const normals = new Float32Array(mesh.normals);
+        this.normalsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
+
+        const aNormalLoc = gl.getAttribLocation(program, 'aNormal');
+        gl.enableVertexAttribArray(aNormalLoc);
+        gl.vertexAttribPointer(aNormalLoc, 3, gl.FLOAT, false, 3*4, 0);
+
         //Draw triangles - each point in bufferData is a vertex.
         gl.drawElements(gl.TRIANGLES, this.elementCount, gl.UNSIGNED_SHORT, 0);
     }
@@ -149,10 +164,10 @@ class Game extends Application {
             player.direction[2] -= player.speed*dt;
         }
         if(player.left){
-            player.direction[0] -= player.speed*dt;
+            player.direction[0] += player.speed*dt;
         }
         if(player.right){
-            player.direction[0] += player.speed*dt;
+            player.direction[0] -= player.speed*dt;
         }
         if(player.rotateLeft){
             mat4.rotateY(this.modelMatrix, this.modelMatrix, player.rotateSpeed*dt);
@@ -167,6 +182,10 @@ class Game extends Application {
         //send mvp matrix to vertex shader
         this.mvpMatrix = getMvpMatrix(this.modelMatrix, this.viewMatrix, this.projectionMatrix);
         gl.uniformMatrix4fv(this.uMvpMatrixLoc, false, this.mvpMatrix);
+
+        //Shading
+        vec3.rotateY(this.lightDirection, this.lightDirection, [0,0,0], 0.02)
+        gl.uniform3fv(this.uLightDirectionLoc, this.lightDirection);
     }
     render(){
         const gl = this.gl;
