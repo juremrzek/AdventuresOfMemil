@@ -7,7 +7,6 @@ class Game extends Application {
     async start(){
         //Create global variables
         this.player = new Player();
-        this.cameraEye = [1,1,1]
         this.time = performance.now();
         this.startTime = this.time;
 
@@ -131,7 +130,8 @@ class Game extends Application {
 
         //Shading
         this.uLightDirectionLoc = gl.getUniformLocation(program, 'uLightDirection');
-        this.lightDirection = [1, 1, 1];
+        this.lightDirection = [1, 0, -1];
+
         gl.uniform3fv(this.uLightDirectionLoc, this.lightDirection);
 
         const normals = new Float32Array(mesh.normals);
@@ -184,7 +184,8 @@ class Game extends Application {
         gl.uniformMatrix4fv(this.uMvpMatrixLoc, false, this.mvpMatrix);
 
         //Shading
-        vec3.rotateY(this.lightDirection, this.lightDirection, [0,0,0], 0.02)
+        vec3.rotateY(this.lightDirection, this.lightDirection, [0,0,0], 0.02);
+        //console.log(this.lightDirection[2]);
         gl.uniform3fv(this.uLightDirectionLoc, this.lightDirection);
     }
     render(){
