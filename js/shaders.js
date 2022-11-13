@@ -34,7 +34,7 @@ const fragment = `#version 300 es
     vec3 diffuseColor = vec3(0.8, 0.8, 0.8);
 
     vec3 specularColor = vec3(0.9, 0.9, 0.9);
-    float specularExp = 80.0;
+    float specularExp = 20.0;
     vec3 lightColor = vec3(1, 1, 1);
 
     vec3 getReflection(vec3 lightDirection, vec3 normal){

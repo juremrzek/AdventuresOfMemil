@@ -1,5 +1,6 @@
 import {Application} from './Application.js'
 import {shaders} from './shaders.js'
+import {Camera} from './Camera.js'
 const mat4 = glMatrix.mat4;
 const vec3 = glMatrix.vec3;
 
@@ -7,6 +8,8 @@ class Game extends Application {
     async start(){
         //Create global variables
         this.player = new Player();
+        this.camera = new Camera();
+        this.cameraEye = [1,1,1]
         this.time = performance.now();
         this.startTime = this.time;
 
@@ -50,7 +53,7 @@ class Game extends Application {
         //-------------------------------------------------------------------------------------------------------------------------------------
         
         //Load json file
-        const response = await fetch('./Test.json');
+        const response = await fetch('./models/Test.json');
         const temp = await response.json();
         const json = [JSON.stringify(temp)]
         const pyramidObject = JSON.parse(json);
@@ -123,6 +126,15 @@ class Game extends Application {
                 player.rotateRight = false;
         });
 
+        document.addEventListener("wheel", function (event) {
+            if (0.9 <= camera.heigth && camera.heigth <= 6)
+                camera.heigth += (event.deltaY / 500)
+            if (0.9 > camera.heigth)
+                camera.heigth = 0.9
+            if (camera.heigth > 6)
+                camera.heigth = 6
+        });
+
         //Izračunamo MVP matriko in pošljemo v vertex shader
         this.uMvpMatrixLoc = gl.getUniformLocation(program, 'uMvpMatrix');
         this.mvpMatrix = getMvpMatrix(this.modelMatrix, this.viewMatrix, this.projectionMatrix);
@@ -155,6 +167,7 @@ class Game extends Application {
         const gl = this.gl;
         const player = this.player;
         player.direction = [0,0,0];
+        const camera = this.camera
 
         //PLAYER MOVEMENT
         if(player.forward){
@@ -171,13 +184,35 @@ class Game extends Application {
         }
         if(player.rotateLeft){
             mat4.rotateY(this.modelMatrix, this.modelMatrix, player.rotateSpeed*dt);
+            player.rotation += player.rotateSpeed * dt
+            player.rotation %= 2*Math.PI
         }
         if(player.rotateRight){
             mat4.rotateY(this.modelMatrix, this.modelMatrix, -player.rotateSpeed*dt);
+            player.rotation -= player.rotateSpeed * dt
+            player.rotation %= 2*Math.PI
         }
         mat4.translate(this.modelMatrix, this.modelMatrix, player.direction);
-        //Update player.pos so we know where to look with the camera.
+        //Update player position
         mat4.getTranslation(player.pos, this.modelMatrix);
+
+        //CAMERA-------------------
+        const dx = Math.sin(player.rotation)
+        const dz = Math.cos(player.rotation)
+
+        vec3.add(camera.pos, player.pos, vec3.fromValues(dx * (-1 - camera.heigth/3), camera.heigth, dz * (-1 - camera.heigth/3)))
+
+        const intrestPoint = vec3.create()
+        vec3.add(intrestPoint, player.pos, vec3.fromValues(dx * (15), 0, dz * (15)))
+
+        mat4.lookAt(
+            this.viewMatrix,    //Matrika kamera
+            camera.pos,         //Lokacija kamere
+            intrestPoint,       //V katero točko naj gleda kamera
+            [0, 1, 0]           //Katera smer je gor
+        );
+        mat4.perspective(this.projectionMatrix, Math.PI / (1.5 + 0.45/camera.heigth), gl.canvas.width / gl.canvas.height, 0.0001, 20);
+        //-----------------------
 
         //send mvp matrix to vertex shader
         this.mvpMatrix = getMvpMatrix(this.modelMatrix, this.viewMatrix, this.projectionMatrix);
