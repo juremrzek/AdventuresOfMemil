@@ -2,8 +2,8 @@ const vertex = `#version 300 es
     uniform mat4 uMvpMatrix;
     uniform vec3 uLightDirection;
 
-    in vec4 aPosition;
-    in vec3 aNormal;
+    layout (location = 0) in vec4 aPosition; //nastavimo statično lokacijo atributov
+    layout (location = 1) in vec3 aNormal;   //position je 1, normala je 2, barva je 3
 
     out vec3 vNormal;
     out vec3 vLightDirection;
