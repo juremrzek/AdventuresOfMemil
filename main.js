@@ -10,15 +10,11 @@ class App extends Application {
         await this.loader.load('./env/env.gltf'); //'./sample_env/sample_env.gltf'
 
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
-        this.camera = await this.loader.loadNode('Camera_Orientation');
-
-        if (!this.scene || !this.camera) {
-            throw new Error('Scene or Camera not present in glTF');
-        }
-
-        if (!this.camera.camera) {
-            throw new Error('Camera node does not contain a camera reference');
-        }
+        const camera_node = await this.loader.loadNode('Camera'); //nalozi kamero
+        this.camera = camera_node.children[0];
+        this.player = await this.loader.loadNode('Memil') //nalozi Memila
+        //console.log(this.camera._translation)
+        //console.log(this.player._translation)
 
         this.renderer = new Renderer(this.gl);
         this.renderer.prepareScene(this.scene);
