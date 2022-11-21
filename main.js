@@ -3,7 +3,7 @@ import { Application } from './common/engine/Application.js';
 import { GLTFLoader } from './GLTFLoader.js';
 import { Renderer } from './Renderer.js';
 
-import { Movment } from './Movment.js'
+import { Movement } from './Movment.js'
 
 const mat4 = glMatrix.mat4;
 const vec3 = glMatrix.vec3;
@@ -16,12 +16,15 @@ class App extends Application {
 
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
         const camera_node = await this.loader.loadNode('Camera'); //nalozi kamero
+        console.log(camera_node)
         this.camera = camera_node.children[0];
         this.player = await this.loader.loadNode('Memil') //nalozi Memila
-        this.movment = new Movment()
-        const movment = this.movment
+        this.movement = new Movement()
+        const movement = this.movement
         console.log(this.scene)
+        console.log(this.player._rotation)
         console.log(this.player.mesh.primitives[0].attributes.POSITION.max)
+        console.log(this.camera)
 
         this.viewMatrix = mat4.create();
         this.projectionMatrix = mat4.create();
@@ -29,41 +32,41 @@ class App extends Application {
         //Event listeners
         window.addEventListener('keydown', (event) => {
             if (event.key == "w" || event.key == "W")
-                movment.forward = true;
+                movement.forward = true;
             if (event.key == "s" || event.key == "S")
-                movment.backwards = true;
+                movement.backwards = true;
             if (event.key == "a" || event.key == "A")
-                movment.left = true;
+                movement.left = true;
             if (event.key == "d" || event.key == "D")
-                movment.right = true;
+                movement.right = true;
             if (event.key == "ArrowLeft")
-                movment.rotateLeft = true;
+                movement.rotateLeft = true;
             if (event.key == "ArrowRight")
-                movment.rotateRight = true;
+                movement.rotateRight = true;
         });
         window.addEventListener('keyup', (event) => {
             if (event.key == "w" || event.key == "W")
-                movment.forward = false;
+                movement.forward = false;
             if (event.key == "s" || event.key == "S")
-                movment.backwards = false;
+                movement.backwards = false;
             if (event.key == "a" || event.key == "A")
-                movment.left = false;
+                movement.left = false;
             if (event.key == "d" || event.key == "D")
-                movment.right = false;
+                movement.right = false;
             if (event.key == "ArrowLeft")
-                movment.rotateLeft = false;
+                movement.rotateLeft = false;
             if (event.key == "ArrowRight")
-                movment.rotateRight = false;
+                movement.rotateRight = false;
         });
 
-        document.addEventListener("wheel", function (event) {
-            if (0.9 <= camera.height && camera.height <= 6)
-                camera.height += (event.deltaY / 500)
-            if (0.9 > camera.height)
-                camera.height = 0.9
-            if (camera.height > 6)
-                camera.height = 6
-        });
+        //document.addEventListener("wheel", function (event) {
+        //    if (0.9 <= camera.height && camera.height <= 6)
+        //        camera.height += (event.deltaY / 500)
+        //    if (0.9 > camera.height)
+        //        camera.height = 0.9
+        //    if (camera.height > 6)
+        //        camera.height = 6
+        //});
 
         this.renderer = new Renderer(this.gl);
         this.renderer.prepareScene(this.scene);
@@ -75,56 +78,41 @@ class App extends Application {
         const dt = (this.time - this.startTime) * 0.001;
         this.startTime = this.time;
 
-        const movment = this.movment
+        const movement = this.movement
         const direction = [0, 0, 0];
-        if (movment.forward) {
-            direction[1] += movment.speed * dt;
-            console.log(movment.forward)
+        if (movement.forward) {
+            direction[2] += movement.speed * dt;
         }
-        if (movment.backwards) {
-            direction[1] -= movment.speed * dt;
+        if (movement.backwards) {
+            direction[2] -= movement.speed * dt;
         }
-        if (movment.left) {
-            direction[0] += movment.speed * dt;
+        if (movement.left) {
+            direction[0] += movement.speed * dt;
         }
-        if (movment.right) {
-            direction[0] -= movment.speed * dt;
+        if (movement.right) {
+            direction[0] -= movement.speed * dt;
         }
         mat4.translate(this.player._matrix, this.player._matrix, direction);
 
-        if (movment.rotateLeft) {
-            mat4.rotateZ(this.player._matrix, this.player._matrix, movment.rotateSpeed * dt);
-            movment.rotation += movment.rotateSpeed * dt
-            movment.rotation %= 2 * Math.PI
+        if (movement.rotateLeft) {
+            mat4.rotateY(this.player._matrix, this.player._matrix, -movement.rotateSpeed * dt);
+            
+            movement.rotation -= movement.rotateSpeed * dt
+            movement.rotation %= 2 * Math.PI
         }
-        if (movment.rotateRight) {
-            mat4.rotateZ(this.player._matrix, this.player._matrix, -movment.rotateSpeed * dt);
-            movment.rotation -= movment.rotateSpeed * dt
-            movment.rotation %= 2 * Math.PI
+        if (movement.rotateRight) {
+            mat4.rotateY(this.player._matrix, this.player._matrix, movement.rotateSpeed * dt);
+            
+            movement.rotation += movement.rotateSpeed * dt
+            movement.rotation %= 2 * Math.PI
         }
 
         //CAMERA-------------------
-        const dx = Math.sin(movment.rotation)
-        const dz = Math.cos(movment.rotation)
+        const dx = Math.sin(movement.rotation)
+        const dz = Math.cos(movement.rotation)
 
         const position = vec3.create()
         mat4.getTranslation(position, this.player._matrix)
-
-        const intrestPoint = vec3.create()
-        vec3.add(intrestPoint, position, vec3.fromValues(dx * (15), 0, dz * (15)))
-
-        //vec3.add(position, position, vec3.fromValues(dx * (-1 - camera.height / 3), camera.height, dz * (-1 - camera.height / 3)))
-        vec3.add(position, position, vec3.fromValues(dx * (-1 - 1 / 3), 1, dz * (-1 - 1 / 3)))
-
-        mat4.lookAt(
-            this.viewMatrix,    //Matrika kamera
-            position,           //Lokacija kamere
-            intrestPoint,       //V katero tocko naj gleda kamera
-            [0, 0, 1]           //Katera smer je gor
-        );
-
-        //mat4.perspective(this.projectionMatrix, Math.PI / (1.5 + 0.45 / camera.height), gl.canvas.width / gl.canvas.height, 0.0001, 20);
-        //mat4.perspective(this.projectionMatrix, Math.PI / (1.5 + 0.45 / 1), this.gl.canvas.width / this.gl.canvas.height, 0.0001, 20);
 
     }
 

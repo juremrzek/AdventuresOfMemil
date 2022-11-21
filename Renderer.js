@@ -159,8 +159,6 @@ export class Renderer {
                     accessor.normalized,
                     bufferView.byteStride,
                     accessor.byteOffset);
-                if(attributeIndex == 1)
-                    console.log(bufferView)
             }
         }
 

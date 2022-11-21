@@ -1,9 +1,9 @@
-export class Movment{
+export class Movement{
     constructor(){
         this.pos = [0,0,0];
         this.direction = [0,0,0];
         this.speed = 10;
-        this.rotateSpeed = 8;
+        this.rotateSpeed = 2;
         this.rotation = 0;
         this.left = false;
         this.right = false;
