@@ -123,6 +123,15 @@ export class Renderer {
             const buffer = this.prepareBufferView(bufferView);
             gl.bindBuffer(bufferView.target, buffer);
         }
+        //bind normal buffer
+        /*if(primitive.attributes.NORMAL){
+            const bufferView = primitive.attributes.NORMALS.bufferView;
+            bufferView.target = gl.ARRAY_BUFFER;
+            const buffer = this.prepareBufferView(bufferView);
+            gl.bindBuffer(bufferView.target, buffer);
+            console.log(buffer)
+        }*/
+        
 
         // this is an application-scoped convention, matching the shader
         const attributeNameToIndexMap = {
@@ -138,7 +147,6 @@ export class Renderer {
             const accessor = primitive.attributes[name];
             const bufferView = accessor.bufferView;
             const attributeIndex = attributeNameToIndexMap[name];
-
             if (attributeIndex !== undefined) {
                 bufferView.target = gl.ARRAY_BUFFER;
                 const buffer = this.prepareBufferView(bufferView);
@@ -151,6 +159,8 @@ export class Renderer {
                     accessor.normalized,
                     bufferView.byteStride,
                     accessor.byteOffset);
+                if(attributeIndex == 1)
+                    console.log(bufferView)
             }
         }
 
@@ -210,6 +220,13 @@ export class Renderer {
 
         if (node.mesh) {
             gl.uniformMatrix4fv(uniforms.uModelViewProjection, false, mvpMatrix);
+            
+            //Send light direction------------------------------
+            this.uLightDirectionLoc = gl.getUniformLocation(program, 'uLightDirection');
+            this.lightDirection = [1, 0.5, 0];
+            gl.uniform3fv(this.uLightDirectionLoc, this.lightDirection);
+            //--------------------------------------------------
+            
             for (const primitive of node.mesh.primitives) {
                 this.renderPrimitive(primitive);
             }
