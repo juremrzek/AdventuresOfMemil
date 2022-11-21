@@ -3,7 +3,6 @@ import { mat4 } from '../common/lib/gl-matrix-module.js';
 import { Camera } from './Camera.js';
 
 export class PerspectiveCamera extends Camera {
-
     constructor(options = {}) {
         super(options);
 

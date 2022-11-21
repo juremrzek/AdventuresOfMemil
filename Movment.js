@@ -1,10 +1,10 @@
+const vec3 = glMatrix.vec3;
 export class Movement{
     constructor(){
-        this.pos = [0,0,0];
-        this.direction = [0,0,0];
         this.speed = 10;
-        this.rotateSpeed = 2;
-        this.rotation = 0;
+        this.rotateSpeed = 1;
+        this.cameraDist = 6;
+        this.positionalOffsetAngle = 1.65;
         this.left = false;
         this.right = false;
         this.forward = false;

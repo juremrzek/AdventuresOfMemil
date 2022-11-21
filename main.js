@@ -16,18 +16,13 @@ class App extends Application {
 
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
         const camera_node = await this.loader.loadNode('Camera'); //nalozi kamero
-        console.log(camera_node)
         this.camera = camera_node.children[0];
         this.player = await this.loader.loadNode('Memil') //nalozi Memila
+        mat4.rotateY(this.player._matrix, this.player._matrix, Math.PI);
         this.movement = new Movement()
         const movement = this.movement
-        console.log(this.scene)
-        console.log(this.player._rotation)
-        console.log(this.player.mesh.primitives[0].attributes.POSITION.max)
-        console.log(this.camera)
-
-        this.viewMatrix = mat4.create();
-        this.projectionMatrix = mat4.create();
+        //this.viewMatrix = mat4.create();
+        //this.projectionMatrix = mat4.create();
 
         //Event listeners
         window.addEventListener('keydown', (event) => {
@@ -79,40 +74,43 @@ class App extends Application {
         this.startTime = this.time;
 
         const movement = this.movement
-        const direction = [0, 0, 0];
+        const direction = vec3.create();
         if (movement.forward) {
-            direction[2] += movement.speed * dt;
+            vec3.add(direction, direction, vec3.fromValues(0, 0, movement.speed * dt));
         }
         if (movement.backwards) {
-            direction[2] -= movement.speed * dt;
+            vec3.add(direction, direction, vec3.fromValues(0, 0, -movement.speed * dt));
         }
         if (movement.left) {
-            direction[0] += movement.speed * dt;
+            vec3.add(direction, direction, vec3.fromValues(movement.speed * dt, 0, 0));
         }
         if (movement.right) {
-            direction[0] -= movement.speed * dt;
+            vec3.add(direction, direction, vec3.fromValues(-movement.speed * dt, 0, 0));
         }
+
         mat4.translate(this.player._matrix, this.player._matrix, direction);
 
+        
         if (movement.rotateLeft) {
-            mat4.rotateY(this.player._matrix, this.player._matrix, -movement.rotateSpeed * dt);
-            
-            movement.rotation -= movement.rotateSpeed * dt
-            movement.rotation %= 2 * Math.PI
+            const rotation = -movement.rotateSpeed * dt
+            mat4.rotateY(this.player._matrix, this.player._matrix, -rotation);
         }
+
         if (movement.rotateRight) {
-            mat4.rotateY(this.player._matrix, this.player._matrix, movement.rotateSpeed * dt);
-            
-            movement.rotation += movement.rotateSpeed * dt
-            movement.rotation %= 2 * Math.PI
+            const rotation = -movement.rotateSpeed * dt
+            mat4.rotateY(this.player._matrix, this.player._matrix, rotation);
         }
 
-        //CAMERA-------------------
-        const dx = Math.sin(movement.rotation)
-        const dz = Math.cos(movement.rotation)
+        this.camera._matrix = mat4.create()
 
-        const position = vec3.create()
-        mat4.getTranslation(position, this.player._matrix)
+        mat4.copy(this.camera._matrix, this.player._matrix)
+        mat4.rotateY(this.camera._matrix, this.camera._matrix, Math.PI);
+
+        const dx = movement.cameraDist * Math.cos(movement.positionalOffsetAngle)
+        const dz = movement.cameraDist * Math.sin(movement.positionalOffsetAngle)
+        const dCamera = vec3.fromValues(dx, 0.3, dz)
+
+        mat4.translate(this.camera._matrix, this.camera._matrix, dCamera)
 
     }
 
