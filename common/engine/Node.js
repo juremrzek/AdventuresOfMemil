@@ -45,11 +45,17 @@ export class Node {
     }
 
     updateTransformationMatrix() {
-        mat4.fromRotationTranslationScale(
-            this._matrix,
-            this._rotation,
-            this._translation,
-            this._scale);
+        //original code requires rotation to be a quaternion. As I don't fully understand those, so i reformated the code to seperatly rotate along the x y and z axis, since the originall was messing with the scale of objects
+        //mat4.fromRotationTranslationScale(
+        //    this._matrix,
+        //    this._rotation,
+        //    this._translation,
+        //    this._scale);
+        mat4.fromTranslation(this._matrix, this._translation);
+        mat4.rotateX(this._matrix, this._matrix, this._rotation[0]);
+        mat4.rotateY(this._matrix, this._matrix, this._rotation[1]);
+        mat4.rotateZ(this._matrix, this._matrix, this._rotation[2]);
+        mat4.scale(this._matrix, this._matrix, this.scale);
 
         this.transformationMatrixNeedsUpdate = false;
     }

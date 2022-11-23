@@ -132,7 +132,6 @@ export class Renderer {
             console.log(buffer)
         }*/
         
-
         // this is an application-scoped convention, matching the shader
         const attributeNameToIndexMap = {
             POSITION   : 0,

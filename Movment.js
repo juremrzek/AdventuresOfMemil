@@ -1,10 +1,11 @@
 const vec3 = glMatrix.vec3;
+const mat4 = glMatrix.mat4;
 export class Movement{
     constructor(){
         this.speed = 10;
         this.rotateSpeed = 1;
         this.cameraDist = 6;
-        this.positionalOffsetAngle = 1.65;
+        this.positionalOffsetAngle = Math.PI/2 + 0.02;
         this.left = false;
         this.right = false;
         this.forward = false;
@@ -16,8 +17,9 @@ export class Movement{
 
     getTransformedAABB(node) {
         // Transform all vertices of the AABB from local to global space.
-        const transform = node.getGlobalTransform();
-        const { min, max } = node.aabb;
+        const transform = node.globalMatrix;
+        const max = node.mesh.primitives[0].attributes.POSITION.max;
+        const min = node.mesh.primitives[0].attributes.POSITION.min;
         const vertices = [
             [min[0], min[1], min[2]],
             [min[0], min[1], max[2]],
@@ -38,29 +40,34 @@ export class Movement{
         return { min: newmin, max: newmax };
     }
 
+    intervalIntersection(min1, max1, min2, max2) {
+        return !(min1 > max2 || min2 > max1);
+    }
+
     aabbIntersection(aabb1, aabb2) {
         return this.intervalIntersection(aabb1.min[0], aabb1.max[0], aabb2.min[0], aabb2.max[0])
             && this.intervalIntersection(aabb1.min[1], aabb1.max[1], aabb2.min[1], aabb2.max[1])
             && this.intervalIntersection(aabb1.min[2], aabb1.max[2], aabb2.min[2], aabb2.max[2]);
     }
 
-    resolveCollisions(scene) {
+    resolveCollisions(player, scene) {
         //GET AABB FOR PLAYER
-        //cont playerBox = this.getTransformedAABB(this)
-            scene.traverse(node => {
+        const playerBox = this.getTransformedAABB(player)
+        scene.traverse(node => {
+            if (node.mesh != null && node != player) {
                 //Get global space AABBs.
                 const aBox = this.getTransformedAABB(node);
-                const bBox = this.getTransformedAABB(b);
 
                 //Check if there is collision.
-                const isColliding = this.aabbIntersection(aBox, bBox);
+                const isColliding = this.aabbIntersection(playerBox, aBox);
+                console.log()
                 if (!isColliding) {
                     return;
                 }
 
                 //Move node A minimally to avoid collision.
-                const diffa = vec3.sub(vec3.create(), bBox.max, aBox.min);
-                const diffb = vec3.sub(vec3.create(), aBox.max, bBox.min);
+                const diffa = vec3.sub(vec3.create(), aBox.max, playerBox.min);
+                const diffb = vec3.sub(vec3.create(), playerBox.max, aBox.min);
 
                 let minDiff = Infinity;
                 let minDirection = [0, 0, 0];
@@ -88,9 +95,14 @@ export class Movement{
                     minDiff = diffb[2];
                     minDirection = [0, 0, -minDiff];
                 }
-
-                vec3.add(this.pos, this.pos, minDirection);
-                a.updateMatrix();
-            });
+                minDirection[1] = 0
+                vec3.add(player._translation, player._translation, minDirection);
+                //console.log(minDirection)
+                //console.log(minDirection)
+                //vec3.rotateY(minDirection, minDirection, this.rotation)
+                //mat4.translate(player._matrix, player._matrix, minDirection)
+                player.updateTransformationMatrix();
+            }
+        });
     }
 }
