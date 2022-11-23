@@ -6,7 +6,7 @@ layout (location = 3) in vec2 aTexCoord;
 
 uniform mat4 uModelViewProjection;
 uniform vec3 uLightDirection;
-uniform vec3 uInverseTranspose;
+uniform mat4 uInverseTranspose;
 
 out vec2 vTexCoord;
 out vec3 vNormal;
@@ -14,7 +14,7 @@ out vec3 vLightDirection;
 out vec4 vPosition;
 
 void main() {
-    vNormal = normalize(mat3(uModelViewProjection)*aNormal);
+    vNormal = normalize(mat3(uInverseTranspose)*aNormal);
     //vNormal = aNormal;
     vTexCoord = aTexCoord;
     gl_Position = uModelViewProjection * aPosition;
@@ -51,7 +51,7 @@ vec3 getReflection(vec3 lightDirection, vec3 normal){
 
 void main() {
     vec3 reflection = -normalize(getReflection(vLightDirection, vNormal));
-    vec3 eye = normalize(-vec3(vPosition));
+    vec3 eye = normalize(vec3(vPosition));
     
     vec3 baseColor = vec3(texture(uBaseColorTexture, vTexCoord));
     //baseColor = vec3(1, 1, 1);

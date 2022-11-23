@@ -17,6 +17,7 @@ export class Renderer {
         gl.clearColor(1, 1, 1, 1);
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
+        gl.depthFunc(gl.LESS);
 
         this.defaultTexture = WebGL.createTexture(gl, {
             width: 1,
@@ -217,11 +218,19 @@ export class Renderer {
         mat4.mul(mvpMatrix, mvpMatrix, node.localMatrix);
 
         if (node.mesh) {
+            //send mvp matrix
             gl.uniformMatrix4fv(uniforms.uModelViewProjection, false, mvpMatrix);
-            
+
+            //calculate and send inverse transpose
+            const inverseTransposeLoc = gl.getUniformLocation(program, 'uInverseTranspose');
+            const inverseTranspose = mat4.create();
+            mat4.invert(inverseTranspose, node.localMatrix);
+            mat4.transpose(inverseTranspose, inverseTranspose);
+            gl.uniformMatrix4fv(inverseTransposeLoc, false, inverseTranspose)
+
             //Send light direction------------------------------
             this.uLightDirectionLoc = gl.getUniformLocation(program, 'uLightDirection');
-            this.lightDirection = [1, 0.5, 0];
+            this.lightDirection = [1, 50, 0];
             gl.uniform3fv(this.uLightDirectionLoc, this.lightDirection);
             //--------------------------------------------------
             
