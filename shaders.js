@@ -51,7 +51,7 @@ vec3 getReflection(vec3 lightDirection, vec3 normal){
 
 void main() {
     vec3 reflection = -normalize(getReflection(vLightDirection, vNormal));
-    vec3 eye = normalize(vec3(vPosition));
+    vec3 eye = normalize(-vec3(vPosition));
     
     vec3 baseColor = vec3(texture(uBaseColorTexture, vTexCoord));
     //baseColor = vec3(1, 1, 1);

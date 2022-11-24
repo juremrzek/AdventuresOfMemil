@@ -10,16 +10,36 @@ export class Movement{
         this.right = false;
         this.forward = false;
         this.backwards = false;
-        this.rotateLeft = false;
-        this.rotateRight = false;
+        this.rotate = false;
         this.node = null;
     }
 
     getTransformedAABB(node) {
         // Transform all vertices of the AABB from local to global space.
         const transform = node.globalMatrix;
-        const max = node.mesh.primitives[0].attributes.POSITION.max;
-        const min = node.mesh.primitives[0].attributes.POSITION.min;
+        let max = [0,0,0];
+        let min = [0,0,0];
+
+        for (let i = 0; i < node.mesh.primitives.length; i++) {
+            if (max[0] < node.mesh.primitives[i].attributes.POSITION.max[0])
+                max[0] = node.mesh.primitives[i].attributes.POSITION.max[0];
+
+            if (max[1] < node.mesh.primitives[i].attributes.POSITION.max[1])
+                max[1] = node.mesh.primitives[i].attributes.POSITION.max[1];
+            
+            if (max[2] < node.mesh.primitives[i].attributes.POSITION.max[2])
+                max[2] = node.mesh.primitives[i].attributes.POSITION.max[2];
+
+            if (min[0] > node.mesh.primitives[i].attributes.POSITION.min[0])
+                min[0] = node.mesh.primitives[i].attributes.POSITION.min[0];
+            
+            if (min[1] > node.mesh.primitives[i].attributes.POSITION.min[1])
+                min[1] = node.mesh.primitives[i].attributes.POSITION.min[1];
+            
+            if (min[2] > node.mesh.primitives[i].attributes.POSITION.min[2])
+                min[2] = node.mesh.primitives[i].attributes.POSITION.min[2];
+        }
+
         const vertices = [
             [min[0], min[1], min[2]],
             [min[0], min[1], max[2]],
@@ -65,7 +85,17 @@ export class Movement{
                     return;
                 }
 
-                //Move node A minimally to avoid collision.
+                else if (node.extras != null && node.extras.Type != null && node.extras.Type == "Cage") {
+                    for (let i = 0; i < scene.nodes.length; i++) {
+                        if (scene.nodes[i] == node)
+                            //scene.nodes.splice(i,1)
+                            if (scene.nodes[i].mesh.primitives.length > 1)
+                                scene.nodes[i].mesh.primitives.shift()
+
+                    }
+                    //scene.removeChild(node)
+                }
+
                 const diffa = vec3.sub(vec3.create(), aBox.max, playerBox.min);
                 const diffb = vec3.sub(vec3.create(), playerBox.max, aBox.min);
 
