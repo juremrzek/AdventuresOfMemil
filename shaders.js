@@ -46,12 +46,12 @@ float specularExp = 80.0;
 vec3 lightColor = vec3(1, 1, 1);
 
 vec3 getReflection(vec3 lightDirection, vec3 normal){
-    return 2.0*dot(lightDirection, normal)*normal - lightDirection;
+    return 2.0*max(dot(lightDirection, normal), 0.0)*normal - lightDirection;
 }
 
 void main() {
     vec3 reflection = -normalize(getReflection(vLightDirection, vNormal));
-    vec3 eye = normalize(vec3(vPosition));
+    vec3 eye = normalize(-vec3(vPosition));
     
     vec3 baseColor = vec3(texture(uBaseColorTexture, vTexCoord));
     //baseColor = vec3(1, 1, 1);
