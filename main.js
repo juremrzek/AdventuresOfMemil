@@ -15,12 +15,12 @@ class App extends Application {
         await this.loader.load('./env/env.gltf'); //'./sample_env/sample_env.gltf'
 
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
-        console.log(this.scene)
         const camera_node = await this.loader.loadNode('Camera_Orientation_Orientation'); //nalozi kamero
         console.log(camera_node)
-        this.camera = camera_node.children[0].children[0];
+        this.camera = camera_node.children[0].children[0].children[0];
         this.player = await this.loader.loadNode('Memil') //nalozi Memila
         mat4.rotateY(this.player._matrix, this.player._matrix, Math.PI);
+        this.score = 0;
         this.movement = new Movement()
         const movement = this.movement
         
@@ -28,7 +28,6 @@ class App extends Application {
         //Event listeners
         this.canvas.addEventListener('click', e => this.canvas.requestPointerLock());
         document.addEventListener('pointerlockchange', e => {
-            console.log(document.pointerLockElement)
             if (document.pointerLockElement === this.canvas) {
                 this.interactable = true
             } else {
@@ -71,7 +70,6 @@ class App extends Application {
         });
 
         document.addEventListener('mousemove', (event) => {
-            //console.log(event.movementX)
             movement.rotate = true
             movement.rotateSpeed = event.movementX
         });
@@ -127,7 +125,10 @@ class App extends Application {
             }
         }
         this.player.updateTransformationMatrix()
-        movement.resolveCollisions(this.player, this.scene)
+        if (movement.resolveCollisions(this.player, this.scene)) {
+            this.score++;
+            console.log(this.score);
+        }
 
         this.camera._matrix = mat4.create()
 
@@ -138,6 +139,8 @@ class App extends Application {
         const dCamera = vec3.fromValues(dx, 1.3, dz)
 
         mat4.translate(this.camera._matrix, this.camera._matrix, dCamera)
+
+        movement.updateCages(this.scene, dt);
 
         movement.rotate = false
     }

@@ -75,6 +75,7 @@ export class Movement{
 
     resolveCollisions(player, scene) {
         //GET AABB FOR PLAYER
+        let status = 0;
         const playerBox = this.getTransformedAABB(player)
         scene.traverse(node => {
             if (node.mesh != null && node != player) {
@@ -83,22 +84,25 @@ export class Movement{
 
                 //Check if there is collision.
                 const isColliding = this.aabbIntersection(playerBox, aBox);
-                console.log()
                 if (!isColliding) {
                     return;
                 }
 
                 else if (node.extras != null && node.extras.Type != null && node.extras.Type == "Cage") {
-                    for (let i = 0; i < scene.nodes.length; i++) {
-                        if (scene.nodes[i] == node)
-                            //scene.nodes.splice(i,1)
-                            if (scene.nodes[i].mesh.primitives.length > 1)
-                                scene.nodes[i].mesh.primitives.shift()
-
+                    if (node.children.length == 1) {
+                        node.children[0].extras.Move = true;
+                        if (node.children[0].extras.Found == null || node.children[0].extras.Found == false) {
+                            node.children[0].extras.Found = true
+                            status = 1
+                        }
                     }
-                    //scene.removeChild(node)
+                    else
+                        node.extras.Move = true;
+                    if (node.extras.Found == null || node.extras.Found == false){
+                        node.extras.Found = true
+                        status = 1
+                    }
                 }
-
                 const diffa = vec3.sub(vec3.create(), aBox.max, playerBox.min);
                 const diffb = vec3.sub(vec3.create(), playerBox.max, aBox.min);
 
@@ -130,13 +134,25 @@ export class Movement{
                     minDiff = diffb[2];
                     minDirection = [0, 0, -minDiff];
                 }
-                //minDirection[1] = 0
+                minDirection[1] = 0
                 vec3.add(player._translation, player._translation, minDirection);
                 //console.log(minDirection)
                 //console.log(minDirection)
                 //vec3.rotateY(minDirection, minDirection, this.rotation)
                 //mat4.translate(player._matrix, player._matrix, minDirection)
                 player.updateTransformationMatrix();
+            }
+        });
+        return status
+    }
+
+    updateCages(scene, dt) {
+        scene.traverse(node => {
+            if (node.extras != null && node.extras.Move != null && node.extras.Move) {
+                if (node._translation[1] > -2) {
+                    vec3.add(node._translation, node._translation, vec3.fromValues(0, -dt, 0));
+                }
+                node.updateTransformationMatrix();
             }
         });
     }
