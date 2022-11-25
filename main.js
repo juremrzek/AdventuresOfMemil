@@ -49,6 +49,11 @@ class App extends Application {
                 movement.rotateLeft = true;
             if (event.key == "ArrowRight")
                 movement.rotateRight = true;
+            if (event.key == " ")
+                if(movement.canJump){
+                    movement.yspeed = 10;
+                    movement.canJump = false;
+                }
         });
         window.addEventListener('keyup', (event) => {
             if (event.key == "w" || event.key == "W")
@@ -87,11 +92,12 @@ class App extends Application {
 
     update() {
         const movement = this.movement
-        if (this.interactable) {
-            const t = this.time = performance.now();
-            const dt = (this.time - this.startTime) * 0.001;
-            this.startTime = this.time;
+        
+        const t = this.time = performance.now();
+        const dt = (this.time - this.startTime) * 0.001;
+        this.startTime = this.time;
 
+        if (this.interactable) {
             let direction = vec3.create();
             if (movement.forward) {
                 vec3.add(direction, direction, vec3.fromValues(0, 0, movement.speed * dt));
@@ -105,6 +111,10 @@ class App extends Application {
             if (movement.right) {
                 vec3.add(direction, direction, vec3.fromValues(-movement.speed * dt / 2, 0, 0));
             }
+
+            //y translation
+            vec3.add(direction, direction, vec3.fromValues(0, movement.yspeed * dt, 0));
+            movement.yspeed -= movement.yacc;
 
             if (!vec3.equals(direction, vec3.fromValues(0, 0, 0)))
                 vec3.rotateY(direction, direction, vec3.fromValues(0, 0, 0), this.player._rotation[1]);
