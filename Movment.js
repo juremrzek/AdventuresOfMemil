@@ -115,8 +115,6 @@ export class Movement{
                 if (diffa[1] >= 0 && diffa[1] < minDiff) {
                     minDiff = diffa[1];
                     minDirection = [0, minDiff, 0];
-                    this.yspeed = 0;
-                    this.canJump = true;
                 }
                 if (diffa[2] >= 0 && diffa[2] < minDiff) {
                     minDiff = diffa[2];
@@ -134,7 +132,10 @@ export class Movement{
                     minDiff = diffb[2];
                     minDirection = [0, 0, -minDiff];
                 }
-                minDirection[1] = 0
+                if(minDirection[1] != 0){
+                    this.yspeed = 0;
+                    this.canJump = true;
+                }
                 vec3.add(player._translation, player._translation, minDirection);
                 //console.log(minDirection)
                 //console.log(minDirection)
