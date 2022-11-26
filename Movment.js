@@ -12,9 +12,9 @@ export class Movement{
         this.backwards = false;
         this.rotate = false;
         this.node = null;
-        this.yspeed = 10;
-        this.yacc = 0.4;
-        this.camJump = true;
+        this.yspeed = 0;
+        this.yacc = 40;
+        this.canJump = true;
     }
 
     getTransformedAABB(node) {

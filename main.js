@@ -112,7 +112,7 @@ class App extends Application {
 
             //y translation
             vec3.add(direction, direction, vec3.fromValues(0, movement.yspeed * dt, 0));
-            movement.yspeed -= movement.yacc;
+            movement.yspeed -= movement.yacc*dt;
 
             if (!vec3.equals(direction, vec3.fromValues(0, 0, 0)))
                 vec3.rotateY(direction, direction, vec3.fromValues(0, 0, 0), this.player._rotation[1]);
