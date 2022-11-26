@@ -11,8 +11,12 @@ const vec3 = glMatrix.vec3;
 class App extends Application {
 
     async start() {
+        let music = document.querySelector('#audio');
+        music.volume = 0.3;
+        music.play();
+
         this.loader = new GLTFLoader();
-        await this.loader.load('./env/env.gltf'); //'./sample_env/sample_env.gltf'
+        await this.loader.load('./env/env.gltf');
 
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
         const camera_node = await this.loader.loadNode('Camera_Orientation_Orientation'); //nalozi kamero
@@ -128,6 +132,19 @@ class App extends Application {
         if (movement.resolveCollisions(this.player, this.scene)) {
             this.score++;
             console.log(this.score);
+        }
+
+        if(this.score == 3){
+            let music = document.querySelector('#audio');
+            music.pause();
+            let cheer = document.querySelector('#cheer');
+            cheer.volume = 0.5;
+            cheer.play();
+            this.score++;
+
+            let end_screen = document.querySelector('#popupOpis');
+            end_screen.style.display = "block";
+            this.interactable = false
         }
 
         this.camera._matrix = mat4.create()

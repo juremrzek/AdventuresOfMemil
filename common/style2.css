@@ -1,0 +1,187 @@
+@font-face {
+    font-family: myFirstFont;
+    src: url('start_screen/Fonstars.otf');
+}
+
+:root {
+    --background_color: #568203;
+    --background_color_hover: #89CFF0;
+    --text_hover: black;
+    --text: white;
+}
+
+
+html, body {
+    height: 100%;
+}
+
+html {
+    display: table;
+    margin: auto;
+    background-color: var(--background_color);
+    background-image: url('start_screen/memil_start.png');
+    background-size:     cover;                      
+    background-repeat:   no-repeat;
+    background-position: center center;  
+}
+
+body {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+a:link, a:active, a:visited{ 
+    text-decoration: none; 
+    color:var(--text);
+    font-size:25px; 
+}
+a:hover { 
+    text-decoration: none; 
+}
+
+
+h1 {
+  font-family: myFirstFont;
+  font-size: 50px;
+  text-align: center;
+  color: #8B4513;
+  -webkit-text-stroke: 2px 	black;
+}
+
+#menu {
+  width:0px;
+  height:0px;
+  border-left: 300px solid transparent;
+  border-right:300px solid transparent;
+  border-top: 400px solid transparent;
+  border-radius: 12px;
+  position:relative;
+  
+  display: flex;
+  row-gap: 40px;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+#igraj {
+  height:50px;
+  width:500px;
+  background:var(--background_color);
+  position:relative;
+  bottom:330px;
+  right:265px;
+  padding: 10px;
+  border: 4px solid var(--text);
+
+  text-align:center;
+  font-family: myFirstFont;
+  border-radius: 12px;
+
+ -webkit-transition:0.5s;
+  transition:0.5s;
+}
+
+#navodila {
+  height:50px;
+  width:400px;
+  background:var(--background_color);
+  position:relative;
+  bottom:345px;
+  right:215px;
+  padding: 10px;
+  border: 4px solid var(--text);
+
+  text-align:center;
+  font-family: myFirstFont;
+  border-radius: 12px;
+  color: var(--text);
+  font-size:25px; 
+
+ -webkit-transition:0.5s;
+  transition:0.5s;
+}
+
+#opis {
+  height:50px;
+  width:300px;
+  background:var(--background_color);
+  position:relative;
+  bottom:360px;
+  right:165px;
+  padding: 10px;
+  border: 4px solid var(--text);
+
+  text-align:center;
+  font-family: myFirstFont;
+  border-radius: 12px;
+  color: var(--text);
+  font-size:25px; 
+
+ -webkit-transition:0.5s;
+  transition:0.5s;
+}
+
+
+#igraj:hover {
+    background:var(--background_color_hover);
+    color:var(--text_hover);
+    border: 4px solid var(--text_hover);
+
+   -webkit-transform:rotate(-1deg);
+    transform:rotate(-2deg);
+}
+
+#navodila:hover {
+    background:var(--background_color_hover);
+    color:var(--text_hover);
+    border: 4px solid var(--text_hover);
+     
+    -webkit-transform:rotate(-2deg);
+    transform:rotate(-2deg);
+}
+  
+#opis:hover {
+    background:var(--background_color_hover);
+    color:var(--text_hover);
+    border: 4px solid var(--text_hover);
+
+    -webkit-transform:rotate(-2deg);
+    transform:rotate(-2deg);
+}
+
+
+.popup{
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.popup-content {
+  margin: 30% auto; 
+  padding: 20px;
+  border: 4px solid black;
+  border-radius: 12px;
+  width:500px;
+  color: black;
+  background-color: #DEB887;
+  font-size: 20px;
+  text-align: center;
+  font-family: Arial
+}
+
+#nazajVIgro {
+  display: none;
+}
+
+h2 {
+  font-family: myFirstFont;
+  font-size: 24px;
+}
+
+

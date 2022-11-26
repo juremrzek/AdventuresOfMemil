@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>90 - Loading glTF files - JavaScript/WebGL 2.0 Examples</title>
+    <title>Adventures of Memil</title>
 
     <link rel="stylesheet" type="text/css" href="./common/style.css">
 
@@ -12,11 +12,26 @@
     <script type="module" src="main.js"></script>
 </head>
 <body>
+    
     <div class="fullscreen no-touch">
         <canvas></canvas>
     </div>
     <div class="fullscreen overlay loader-container">
         <div class="loader"></div>
+    </div>
+    <audio loop id="audio" src="common/music/little-adventure.mp3"></audio>
+    <audio id="cheer" src="common/music/crowd-cheer.mp3"></audio>
+    <div id="popupOpis" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h2><em>Zmaga</em></h2>
+            <p>
+                Uspelo ti je osvoboditi vse Memilove prijateje!
+                <br>
+                Osvoboditvi je sledilo več dni praznovanja.
+                <br>
+            </p>
+            <button><a href="start-screen.html" id="igraj">IGRAJ ZNOVA</a></button>
+        </div>
     </div>
 </body>
 </html>
