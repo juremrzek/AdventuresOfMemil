@@ -11,23 +11,23 @@ const vec3 = glMatrix.vec3;
 class App extends Application {
 
     async start() {
-        let music = document.querySelector('#audio');
-        music.volume = 0.3;
-        music.play();
-
         this.loader = new GLTFLoader();
         await this.loader.load('./env/env.gltf');
 
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
-        const camera_node = await this.loader.loadNode('Camera_Orientation_Orientation'); //nalozi kamero
-        console.log(camera_node)
+        
+        const camera_node = await this.loader.loadNode('Camera_Orientation'); //nalozi kamero
+        //console.log(camera_node)
         this.camera = camera_node.children[0].children[0].children[0];
         this.player = await this.loader.loadNode('Memil') //nalozi Memila
         mat4.rotateY(this.player._matrix, this.player._matrix, Math.PI);
-        this.score = 0;
         this.movement = new Movement()
         const movement = this.movement
-        
+        this.score = 0;
+
+        let music = document.querySelector('#audio');
+        music.volume = 0.3;
+        music.play();
 
         //Event listeners
         this.canvas.addEventListener('click', e => this.canvas.requestPointerLock());
@@ -131,10 +131,9 @@ class App extends Application {
         this.player.updateTransformationMatrix()
         if (movement.resolveCollisions(this.player, this.scene)) {
             this.score++;
-            console.log(this.score);
         }
 
-        if(this.score == 3){
+        if(this.score == 5){
             let music = document.querySelector('#audio');
             music.pause();
             let cheer = document.querySelector('#cheer');
@@ -144,6 +143,7 @@ class App extends Application {
 
             let end_screen = document.querySelector('#popupOpis');
             end_screen.style.display = "block";
+            document.exitPointerLock()
             this.interactable = false
         }
 
@@ -153,7 +153,7 @@ class App extends Application {
         mat4.rotateY(this.camera._matrix, this.camera._matrix, Math.PI);
         const dx = movement.cameraDist * Math.cos(movement.positionalOffsetAngle)
         const dz = movement.cameraDist * Math.sin(movement.positionalOffsetAngle)
-        const dCamera = vec3.fromValues(dx, 1.3, dz)
+        const dCamera = vec3.fromValues(dx, 0.7, dz)
 
         mat4.translate(this.camera._matrix, this.camera._matrix, dCamera)
 

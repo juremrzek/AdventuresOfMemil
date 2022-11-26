@@ -2,10 +2,10 @@ const vec3 = glMatrix.vec3;
 const mat4 = glMatrix.mat4;
 export class Movement{
     constructor(){
-        this.speed = 10;
+        this.speed = 15;
         this.rotateSpeed = 1;
-        this.cameraDist = 6;
-        this.positionalOffsetAngle = Math.PI/2 + 0.02;
+        this.cameraDist = 8;
+        this.positionalOffsetAngle = Math.PI/2;
         this.left = false;
         this.right = false;
         this.forward = false;
@@ -87,8 +87,8 @@ export class Movement{
                 if (!isColliding) {
                     return;
                 }
-
                 else if (node.extras != null && node.extras.Type != null && node.extras.Type == "Cage") {
+                    
                     if (node.children.length == 1) {
                         node.children[0].extras.Move = true;
                         if (node.children[0].extras.Found == null || node.children[0].extras.Found == false) {
@@ -150,8 +150,8 @@ export class Movement{
     updateCages(scene, dt) {
         scene.traverse(node => {
             if (node.extras != null && node.extras.Move != null && node.extras.Move) {
-                if (node._translation[1] > -2) {
-                    vec3.add(node._translation, node._translation, vec3.fromValues(0, -dt, 0));
+                if (node._translation[1] > -6) {
+                    vec3.add(node._translation, node._translation, vec3.fromValues(0, -2*dt, 0));
                 }
                 node.updateTransformationMatrix();
             }
