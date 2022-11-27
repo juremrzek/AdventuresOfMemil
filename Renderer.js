@@ -229,8 +229,26 @@ export class Renderer {
 
             //Send light direction------------------------------
             this.uLightDirectionLoc = gl.getUniformLocation(program, 'uLightDirection');
-            this.lightDirection = [1, 50, 0];
+            this.lightDirection = [20, 50, 0];
             gl.uniform3fv(this.uLightDirectionLoc, this.lightDirection);
+
+            //Send shading info---------------------------------------
+            //Ambient
+            this.uAmbientScalarLoc = gl.getUniformLocation(program, 'uAmbientScalar');
+            gl.uniform1f(this.uAmbientScalarLoc, 0.3);
+            //Diffuse
+            this.uDiffuseLoc = gl.getUniformLocation(program, 'uDiffuseScalar');
+            gl.uniform1f(this.uDiffuseLoc, 0.4);
+            //Specular
+            this.uSpecularLoc = gl.getUniformLocation(program, 'uSpecularScalar');
+            gl.uniform1f(this.uSpecularLoc, 0.5);
+            this.uSpecularExpLoc = gl.getUniformLocation(program, 'uSpecularExp');
+            let specularExp = 80;
+            if(node.extras && node.extras.Type == "Memil"){
+                specularExp = Infinity;
+                //gl.uniform1f(this.uDiffuseLoc, 0.8);
+            }
+            gl.uniform1f(this.uSpecularExpLoc, specularExp);
             //--------------------------------------------------
             
             for (const primitive of node.mesh.primitives) {

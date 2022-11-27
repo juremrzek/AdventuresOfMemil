@@ -11,15 +11,15 @@ uniform mat4 uInverseTranspose;
 out vec2 vTexCoord;
 out vec3 vNormal;
 out vec3 vLightDirection;
-out vec4 vPosition;
+out vec3 vPosition;
 
 void main() {
     vNormal = normalize(mat3(uInverseTranspose)*aNormal);
-    //vNormal = aNormal;
     vTexCoord = aTexCoord;
-    gl_Position = uModelViewProjection * aPosition;
-    vLightDirection = normalize(uLightDirection-vec3(gl_Position));
-    vPosition = gl_Position;
+    vec4 position = uModelViewProjection * aPosition;
+    vLightDirection = normalize(uLightDirection-vec3(position));
+    vPosition = vec3(position);
+    gl_Position = position;
 }
 `;
 
@@ -30,19 +30,20 @@ precision mediump sampler2D;
 in vec3 vNormal;
 in vec3 vLightDirection;
 in vec3 vBaseColor;
-in vec4 vPosition;
+in vec3 vPosition;
 
 uniform sampler2D uBaseColorTexture;
 uniform vec4 uBaseColorFactor;
+
+uniform float uAmbientScalar;
+uniform float uDiffuseScalar;
+uniform float uSpecularScalar;
+uniform float uSpecularExp;
 
 in vec2 vTexCoord;
 
 out vec4 oColor;
 
-vec3 ambientColor = vec3(0.3, 0.3, 0.3);
-vec3 diffuseColor = vec3(0.8, 0.8, 0.8);
-vec3 specularColor = vec3(0.9, 0.9, 0.9);
-float specularExp = 80.0;
 vec3 lightColor = vec3(1, 1, 1);
 
 vec3 getReflection(vec3 lightDirection, vec3 normal){
@@ -50,14 +51,14 @@ vec3 getReflection(vec3 lightDirection, vec3 normal){
 }
 
 void main() {
-    vec3 reflection = -normalize(getReflection(vLightDirection, vNormal));
-    vec3 eye = normalize(-vec3(vPosition));
+    vec3 reflection = normalize(reflect(-vLightDirection, vNormal));
+    vec3 eye = normalize(-vPosition);
     
     vec3 baseColor = vec3(texture(uBaseColorTexture, vTexCoord));
 
-    vec3 ambient = baseColor * ambientColor;
-    vec3 diffuse = baseColor * max(dot(vLightDirection, vNormal), 0.0) * diffuseColor;
-    vec3 specular = lightColor*specularColor*pow(max(dot(reflection, eye), 0.0), specularExp);
+    vec3 ambient = baseColor * uAmbientScalar;
+    vec3 diffuse = baseColor * max(dot(vLightDirection, vNormal), 0.0) * uDiffuseScalar;
+    vec3 specular = lightColor*uSpecularScalar*pow(max(dot(reflection, eye), 0.0), uSpecularExp);
     oColor = vec4(ambient + diffuse + specular, 1);
     oColor.a = 1.0;
 }

@@ -4,7 +4,7 @@ export class Movement{
     constructor(){
         this.speed = 15;
         this.rotateSpeed = 1;
-        this.cameraDist = 8;
+        this.cameraDist = 12;
         this.positionalOffsetAngle = Math.PI/2;
         this.left = false;
         this.right = false;
