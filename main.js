@@ -154,6 +154,16 @@ class App extends Application {
 
         mat4.copy(this.camera._matrix, this.player._matrix)
         mat4.rotateY(this.camera._matrix, this.camera._matrix, Math.PI);
+        
+        let playerRotation = mat4.create();
+        mat4.rotateY(playerRotation, playerRotation, this.player._rotation[1]);
+        console.log(playerRotation)
+        let targetAngle = Math.atan2(direction[0], direction[2]);
+        let minusAngle = Math.atan2(playerRotation[0], playerRotation[2]);
+        mat4.rotateY(this.player._matrix, this.player._matrix, targetAngle-minusAngle)
+        mat4.rotateY(this.player._matrix, this.player._matrix, Math.PI/2);
+        
+        
         const dx = movement.cameraDist * Math.cos(movement.positionalOffsetAngle)
         const dz = movement.cameraDist * Math.sin(movement.positionalOffsetAngle)
         const dCamera = vec3.fromValues(dx, 0.7, dz)
