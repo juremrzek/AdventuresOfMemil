@@ -17,8 +17,8 @@ class App extends Application {
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
         
         const camera_node = await this.loader.loadNode('Camera_Orientation'); //nalozi kamero
-        //console.log(camera_node)
-        this.camera = camera_node.children[0].children[0].children[0];
+        console.log(camera_node)
+        this.camera = camera_node.children[0].children[0].children[0].children[0];
         this.player = await this.loader.loadNode('Memil') //nalozi Memila
         mat4.rotateY(this.player._matrix, this.player._matrix, Math.PI);
         this.movement = new Movement()
