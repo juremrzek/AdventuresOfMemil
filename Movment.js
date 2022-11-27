@@ -78,7 +78,7 @@ export class Movement{
         let status = 0;
         const playerBox = this.getTransformedAABB(player)
         scene.traverse(node => {
-            if (node.mesh != null && node != player && node != player.children[0]) {
+            if (node.mesh != null && node != player) {
                 //Get global space AABBs.
                 const aBox = this.getTransformedAABB(node);
 

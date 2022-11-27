@@ -17,7 +17,8 @@ class App extends Application {
         this.scene = await this.loader.loadScene(this.loader.defaultScene);
         
         const camera_node = await this.loader.loadNode('Camera_Orientation'); //nalozi kamero
-        this.camera = camera_node;
+        console.log(camera_node)
+        this.camera = camera_node.children[0].children[0].children[0].children[0];
         this.player = await this.loader.loadNode('Memil') //nalozi Memila
         //console.log(this.player)
         mat4.rotateY(this.player._matrix, this.player._matrix, Math.PI);
@@ -99,9 +100,8 @@ class App extends Application {
         const dt = (this.time - this.startTime) * 0.001;
         this.startTime = this.time;
 
-        let direction = vec3.create();
         if (this.interactable) {
-
+            let direction = vec3.create();
             if (movement.forward) {
                 vec3.add(direction, direction, vec3.fromValues(0, 0, movement.speed * dt));
             }
@@ -129,7 +129,6 @@ class App extends Application {
                 vec3.add(this.player._rotation, this.player._rotation, [0, -rotation, 0]);
             }
         }
-
         this.player.updateTransformationMatrix()
         if (movement.resolveCollisions(this.player, this.scene)) {
             this.score++;
