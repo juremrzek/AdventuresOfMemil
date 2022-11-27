@@ -57,6 +57,8 @@ class App extends Application {
                     movement.yspeed = 10;
                     movement.canJump = false;
                 }
+            if (event.key == "Shift")
+                movement.sprint = true;
         });
         window.addEventListener('keyup', (event) => {
             if (event.key == "w" || event.key == "W")
@@ -71,6 +73,8 @@ class App extends Application {
                 movement.rotateLeft = false;
             if (event.key == "ArrowRight")
                 movement.rotateRight = false;
+            if (event.key == "Shift")
+                movement.sprint = false;
         });
 
         document.addEventListener('mousemove', (event) => {
@@ -98,6 +102,11 @@ class App extends Application {
         const t = this.time = performance.now();
         const dt = (this.time - this.startTime) * 0.001;
         this.startTime = this.time;
+
+        if(movement.sprint)
+            movement.speed = 30;
+        else
+            movement.speed = 15;
 
         let direction = vec3.create();
         if (this.interactable) {
@@ -153,16 +162,7 @@ class App extends Application {
         this.camera._matrix = mat4.create()
 
         mat4.copy(this.camera._matrix, this.player._matrix)
-        mat4.rotateY(this.camera._matrix, this.camera._matrix, Math.PI);
-        
-        let playerRotation = mat4.create();
-        mat4.rotateY(playerRotation, playerRotation, this.player._rotation[1]);
-        console.log(playerRotation)
-        let targetAngle = Math.atan2(direction[0], direction[2]);
-        let minusAngle = Math.atan2(playerRotation[0], playerRotation[2]);
-        mat4.rotateY(this.player._matrix, this.player._matrix, targetAngle-minusAngle)
-        mat4.rotateY(this.player._matrix, this.player._matrix, Math.PI/2);
-        
+        mat4.rotateY(this.camera._matrix, this.camera._matrix, Math.PI);       
         
         const dx = movement.cameraDist * Math.cos(movement.positionalOffsetAngle)
         const dz = movement.cameraDist * Math.sin(movement.positionalOffsetAngle)
