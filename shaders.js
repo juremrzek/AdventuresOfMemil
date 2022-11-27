@@ -54,7 +54,6 @@ void main() {
     vec3 eye = normalize(-vec3(vPosition));
     
     vec3 baseColor = vec3(texture(uBaseColorTexture, vTexCoord));
-    //baseColor = vec3(1, 1, 1);
 
     vec3 ambient = baseColor * ambientColor;
     vec3 diffuse = baseColor * max(dot(vLightDirection, vNormal), 0.0) * diffuseColor;

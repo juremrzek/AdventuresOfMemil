@@ -223,7 +223,7 @@ export class Renderer {
             //calculate and send inverse transpose
             const inverseTransposeLoc = gl.getUniformLocation(program, 'uInverseTranspose');
             const inverseTranspose = mat4.create();
-            mat4.invert(inverseTranspose, node.localMatrix);
+            mat4.invert(inverseTranspose, node.globalMatrix);
             mat4.transpose(inverseTranspose, inverseTranspose);
             gl.uniformMatrix4fv(inverseTransposeLoc, false, inverseTranspose)
 
