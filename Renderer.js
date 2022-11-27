@@ -235,13 +235,13 @@ export class Renderer {
             //Send shading info---------------------------------------
             //Ambient
             this.uAmbientScalarLoc = gl.getUniformLocation(program, 'uAmbientScalar');
-            gl.uniform1f(this.uAmbientScalarLoc, 0.3);
+            gl.uniform1f(this.uAmbientScalarLoc, 0.4);
             //Diffuse
             this.uDiffuseLoc = gl.getUniformLocation(program, 'uDiffuseScalar');
-            gl.uniform1f(this.uDiffuseLoc, 0.4);
+            gl.uniform1f(this.uDiffuseLoc, 0.8);
             //Specular
             this.uSpecularLoc = gl.getUniformLocation(program, 'uSpecularScalar');
-            gl.uniform1f(this.uSpecularLoc, 0.5);
+            gl.uniform1f(this.uSpecularLoc, 0.9);
             this.uSpecularExpLoc = gl.getUniformLocation(program, 'uSpecularExp');
             let specularExp = 80;
             if(node.extras && node.extras.Type == "Memil"){
