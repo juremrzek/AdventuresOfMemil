@@ -1,5 +1,0 @@
-Name of mesh: Plane, Jail.1, Jail.2, Jail.3, Camera, Memil
-
-Plane je sama mapa (tla, skale, meja), Jail.x so 3 kletke ki so vsaka svoj mesh (lahko posamicno klicejo/animirajo),
-Camera je kamera, Memil je Memil.
-

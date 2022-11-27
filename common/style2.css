@@ -19,7 +19,7 @@ html {
     display: table;
     margin: auto;
     background-color: var(--background_color);
-    background-image: url('start_screen/Illustration.png');
+    background-image: url('start_screen/Illustration.jpg');
     background-size:     cover;                      
     background-repeat:   no-repeat;
     background-position: center center;  
